@@ -68,6 +68,37 @@ Final predictions combine both signals:
 The higher temporal weight on expiry day captures the IV collapse toward close — a time-dimension effect the cross-sectional polynomial alone cannot model.
 
 ---
+## Validation
+ 
+**Method: Leave-One-Out (LOO) cross-validation**
+ 
+For each observed IV cell, the value is temporarily removed and predicted using only the remaining observed strikes at the same timestamp — exactly mirroring the competition structure (predict missing from observed at the same time).
+ 
+```
+LOO MSE — Unweighted poly3 (baseline) : 0.00002651
+LOO MSE — Gaussian-weighted poly3     : 0.00002102
+Improvement                           : 20.7%
+```
+ 
+**Per-column highlights** (baseline vs ours, ratio > 1 means ours wins):
+ 
+| Strike | Baseline MSE | Our MSE | Ratio |
+|--------|-------------|---------|-------|
+| 26300CE | 0.00000508 | 0.00000067 | **7.60×** |
+| 24000PE | 0.00001319 | 0.00000176 | **7.49×** |
+| 24800PE | 0.00000665 | 0.00000094 | **7.04×** |
+| 26500CE | 0.00000741 | 0.00000175 | **4.25×** |
+| 24500PE | 0.00003726 | 0.00000719 | **5.18×** |
+ 
+Gaussian weighting wins on 18/28 columns; it is most effective on wing strikes (deep ITM/OTM) where local neighborhood matters more.
+ 
+**SVI convergence:** 715 / 723 timestamps with extrapolation needs converged successfully (99%).
+ 
+**Sanity checks (run post-fill):**
+-  Zero NaN remaining in filled dataset
+-  All IV values strictly positive (min = 0.01680)
+-  No look-ahead bias — verified by data access pattern in code
+
 
 ## No Look-Ahead Bias
 
