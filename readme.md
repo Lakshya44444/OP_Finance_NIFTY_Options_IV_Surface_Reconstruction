@@ -14,8 +14,8 @@ Given a partially observed Implied Volatility (IV) dataset for NIFTY 50 options 
 
 ## Key EDA Findings
 
-- IV smile is **smooth and monotone in log-moneyness** space — well suited for polynomial fitting
-- Always **≥ 6 observed strikes per timestamp** → polynomial fitting always well-conditioned
+- IV smile is **smooth and monotone in log-moneyness** space - well suited for polynomial fitting
+- Always **≥ 6 observed strikes per timestamp** -> polynomial fitting always well-conditioned
 - **Expiry day (Jan 27)** shows sharp end-of-day IV spikes in OTM puts and instability in OTM calls as time-to-expiry approaches zero
 - Term structure confirms IV rises as DTE shrinks (expiry effect)
 - Feature correlations with IV:
@@ -35,7 +35,7 @@ Given a partially observed Implied Volatility (IV) dataset for NIFTY 50 options 
 
 The solution is a **three-step pipeline** with zero look-ahead bias at every stage.
 
-### Step 1 — Cross-Sectional Fit (per timestamp)
+### Step 1 - Cross-Sectional Fit (per timestamp)
 
 For each timestamp independently, using only the observed IV values at that row:
 
@@ -52,11 +52,11 @@ w(k) = a + b·[ρ·(k−m) + √((k−m)² + σ²)]
 ```
 is specifically designed for wing behaviour — linear in |k| at tails with correct asymptotic behaviour. A no-butterfly condition is enforced during fitting to avoid arbitrage.
 
-### Step 2 — Intra-Day Temporal Smoothing (PCHIP)
+### Step 2 - Intra-Day Temporal Smoothing (PCHIP)
 
 For each strike column independently, a **PCHIP interpolator** is fit within each 75-row trading day window using only same-day observed values. PCHIP (Piecewise Cubic Hermite Interpolating Polynomial) is monotone-preserving — it never overshoots between observations, which is important for IV that cannot go negative.
 
-### Step 3 — Adaptive Blend
+### Step 3 - Adaptive Blend
 
 Final predictions combine both signals:
 
@@ -78,7 +78,7 @@ The higher temporal weight on expiry day captures the IV collapse toward close �
 | Temporal PCHIP | Same trading day (75 rows), prior observations only |
 | Blend | — |
 
-**Validation:** Leave-One-Out (LOO) — one observed cell removed, predicted from the remaining cells at the same timestamp. This exactly mirrors the competition test structure.
+**Validation:** Leave-One-Out (LOO) - one observed cell removed, predicted from the remaining cells at the same timestamp. This exactly mirrors the competition test structure.
 
 ---
 
