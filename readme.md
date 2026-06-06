@@ -42,7 +42,7 @@ For each timestamp independently, using only the observed IV values at that row:
 - **Interpolation** (target inside observed strike range): Gaussian-weighted degree-3 polynomial in log-moneyness `k = log(K/S)`, `σ_frac = 0.62`
 - **Extrapolation** (target outside range): SVI model (80%) + 2-point linear safety net (20%); falls back to Gaussian poly (σ_frac = 1.2) + 50% linear if SVI fails
 
-**Why log-moneyness?** Raw strikes ignore the moving spot price — the same raw strike has different financial meaning as NIFTY moves. Log-moneyness normalises K relative to S, giving a consistent smile shape across all days.
+**Why log-moneyness?** Raw strikes ignore the moving spot price - the same raw strike has different financial meaning as NIFTY moves. Log-moneyness normalises K relative to S, giving a consistent smile shape across all days.
 
 **Why Gaussian weights?** Feature analysis shows `iv_neighbor_mean` has correlation 0.996 with IV — local strikes are by far the strongest predictors. Gaussian weights `w_i = exp(-½·((k_i − k_target)/σ)²)` with `σ = 0.62 × half-range` formalise this locality.
 
@@ -90,8 +90,8 @@ The higher temporal weight on expiry day captures the IV collapse toward close �
 For each observed IV cell, the value is temporarily removed and predicted using only the remaining observed strikes at the same timestamp — exactly mirroring the competition structure (predict missing from observed at the same time).
  
 ```
-LOO MSE — Unweighted poly3 (baseline) : 0.00002651
-LOO MSE — Gaussian-weighted poly3     : 0.00002102
+LOO MSE - Unweighted poly3 (baseline) : 0.00002651
+LOO MSE - Gaussian-weighted poly3     : 0.00002102
 Improvement                           : 20.7%
 ```
  
@@ -112,7 +112,7 @@ Gaussian weighting wins on 18/28 columns; it is most effective on wing strikes (
 **Sanity checks (run post-fill):**
 -  Zero NaN remaining in filled dataset
 -  All IV values strictly positive (min = 0.01680)
--  No look-ahead bias — verified by data access pattern in code
+-  No look-ahead bias - verified by data access pattern in code
 
 
 ## No Look-Ahead Bias
