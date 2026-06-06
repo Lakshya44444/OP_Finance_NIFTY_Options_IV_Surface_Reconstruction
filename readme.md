@@ -68,6 +68,21 @@ Final predictions combine both signals:
 The higher temporal weight on expiry day captures the IV collapse toward close — a time-dimension effect the cross-sectional polynomial alone cannot model.
 
 ---
+## Assumptions
+ 
+| Assumption | Justification |
+|---|---|
+| IV smile is smooth in log-moneyness space | Confirmed by EDA — monotone, smooth across all days |
+| ≥ 2 observed strikes always available per timestamp | Verified: minimum observed across all rows is 6 |
+| Intra-day IV evolves continuously within a session | Supported by 5-min bar structure; PCHIP monotone-preserving |
+| SVI linear wing asymptotics hold | Standard result (Gatheral 2004); used only for extrapolation |
+| Single expiry (Jan 27) across entire dataset | Dataset confirms single expiry — no term-structure dimension needed |
+| T = 21/365 for regular days, T = 1/365 for expiry day | Approximate; exact DTE computed per row in feature engineering but simplified for SVI |
+| IV ≥ 0.005 (hard floor) | Negative IV is financially meaningless; floor applied as final clip |
+| Missing values are MCAR (Missing Completely At Random) | Competition structure implies random missingness; no pattern-based leakage assumed |
+
+---
+
 ## Validation
  
 **Method: Leave-One-Out (LOO) cross-validation**
